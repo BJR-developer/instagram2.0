@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.shadow-full {
+    box-shadow: #e5e5e5 0px 0px 5px 3px;
+}
+
+.shadow-arrow {
+    box-shadow: #e5e5e5 -2px -2px 2px 0px;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: rgb(39, 39, 39);
+}
+
+.roboto {
+    font-family: 'Roboto', sans-serif;
+
+}
