@@ -5,12 +5,15 @@ import { Login } from "../../components/partials/Login"
 export default function SignIn({ providers }) {
   return (
     <>
-    <Head><title>Instagram 2.0 - Login</title></Head>
+      <Head>
+        <title>Instagram 2.0 - Login</title>
+        <link rel='icon' href='/images/logo.jpg' />
+      </Head>
       {Object.values(providers).map((provider) => (
         <div key={provider.name}>
           <Login
-          proName={provider.name}
-          proId={provider.id}
+            proName={provider.name}
+            proId={provider.id}
           />
         </div>
       ))}

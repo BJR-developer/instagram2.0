@@ -1,11 +1,22 @@
 import { useSession, signIn, signOut } from "next-auth/react"
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { BiUserCircle, BiBookmark } from 'react-icons/bi'
 import { AiOutlineSetting } from 'react-icons/ai'
 import { BiRefresh } from 'react-icons/bi'
+import { useDispatch } from "react-redux"
+import { isProfileMenu as isProfileMenuRedux } from '../../../redux/actions/index'
+
 export const ProfileOption = ({isProfileMenu}) => {
+    const profileMenuRef = useRef();
+    const dispatch = useDispatch();
+
+    window.onclick = function(event) {
+        if (event.target == profileMenuRef.current) {
+            profileMenuRef.current.style.display = "none";
+        }
+      }
   return (
-    <div className={`profile ${isProfileMenu ? 'block' : 'hidden' } z-20 font-extralight Option absolute bottom-0 right-0 rounded-md mt-[64px] w-64 h-[14.2rem] top-0 bg-white px-3 py-2 shadow-full`}>
+    <div id="profileMenu" ref={profileMenuRef} className={`profile ${isProfileMenu  ? 'block' : 'displaynone' } z-20  Option absolute bottom-0 right-0 rounded-md mt-[64px] w-64 h-[14.2rem] top-0 bg-white px-3 py-2 shadow-full`}>
         <div className='profile cursor-pointer my-4 flex items-center '>
             <BiUserCircle className='text-xl'/>
             <span className='mx-2'>Profile</span>
