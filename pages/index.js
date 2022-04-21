@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Home from "../components/Home";
 import { useSession, getSession, signIn, signOut } from "next-auth/react";
 import { Loader } from "../components/Loader";
@@ -19,8 +19,11 @@ export const MainHome = ({ serverSession,userData }) => {
 export default MainHome;
 
 export async function getServerSideProps(ctx) {
+  if (typeof window !== "undefined") {
+    console.log(window.location.origin);
+  }
   const res = await getSession(ctx);
-  const userData = await fetch(`http://localhost:3000/api/users/info/${res?.user.name}/${res?.user.email}`);
+  const userData = await fetch(`${process.env.NEXTAUTH_URL}/api/users/info/${res?.user.name}/${res?.user.email}`);
   const userJsonData =await userData.json();
   if (!res) {
     return {
