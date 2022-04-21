@@ -23,7 +23,7 @@ export const LoopPosts = () => {
         setPosts(snapShot.docs);
       }
     );
-  }, [db,postLimit]);
+  }, [db,postLimit,posts]);
 
   function increaseNumber(num) {
     setLimit(num + 1)

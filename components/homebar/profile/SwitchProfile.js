@@ -5,6 +5,10 @@ import React from "react";
 export const SwitchProfile = () => {
   const { data: session } = useSession();
   const { name, image, email } = session.user;
+  const fullName = name.toLocaleLowerCase()
+  const firstName = fullName.split(" ")[0];
+  const lastName = fullName.split(" ")[1];
+  const userName = firstName + "_" + lastName;
   const router = useRouter();
   return (
     <div className="profileSwitch fixed -mx-[310px] my-5 flex items-center md:hidden">
@@ -15,13 +19,13 @@ export const SwitchProfile = () => {
       />
       <div className="mx-2 name">
         <h3 className=" font-semibold text-sm tracking-wide">
-          jamilur_rahman_bjr
+          {name}
         </h3>
-        <h3 className=" text-xs tracking-wide text-gray-600">{name}</h3>
+        <h3 className=" text-xs tracking-wide text-gray-600">{userName}</h3>
       </div>
       <button
         onClick={() => router.push("/auth/signin")}
-        className="mx-2 text-xs text-cyan-500 font-semibold"
+        className="mx-2 text-xs text-[rgb(69,118,255)] font-semibold"
       >
         Switch
       </button>

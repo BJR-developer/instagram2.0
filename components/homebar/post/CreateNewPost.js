@@ -15,6 +15,7 @@ import {
 import { db, storage } from "../../../firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
 export const CreateNewPost = () => {
 
@@ -24,7 +25,7 @@ export const CreateNewPost = () => {
   const imageInput = useRef();
   const caption = useRef();
   const dispatch = useDispatch();
-
+  const router = useRouter();
   const closePostbar = () => {
     dispatch(isCreatePost(false));
   };
@@ -64,6 +65,7 @@ export const CreateNewPost = () => {
       setLoading(false);
       dispatch(isCreatePost(false));
       setSelectImage(null);
+      router.reload()
     } catch (error) {
       console.log(error);
     }
