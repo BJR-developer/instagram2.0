@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Moment from "react-moment";
+// import Moment from "react-moment";
 import { useSession } from 'next-auth/react'
 import { db as database } from "../../../firebase";
 import {
@@ -24,6 +24,10 @@ import {
   setDoc,
 } from "firebase/firestore";
 import jsCookie from "js-cookie";
+import { Menu, Transition } from '@headlessui/react'
+import { Fragment } from 'react';
+import classNames from 'classnames';
+
 
 export const SinglePosts = ({
   profileImg,
@@ -32,16 +36,18 @@ export const SinglePosts = ({
   caption,
   timestamp,
   id,
+  postUserId
 }) => {
-  const { data:session } = useSession();
+  const { data: session } = useSession();
   const [isLike, setLike] = useState(false);
   const [comment, setComment] = useState("");
   const [postComments, setPostComments] = useState([]);
-  const [totalReacts , setTotalReacts] = useState([]);
-  const [hasLike , setHasLike] = useState();
-  const [allLove , setTotalLove] = useState(null);
-    const userId = jsCookie.get("userid");
-
+  const [totalReacts, setTotalReacts] = useState([]);
+  const [hasLike, setHasLike] = useState();
+  const [allLove, setTotalLove] = useState(null);
+  const userId = jsCookie.get("userid");
+  const isMe = (userId === postUserId);
+  // console.log(isMe);
   useEffect(() => {
     onSnapshot(
       query(collection(database, "posts", `${id}`, "comments")),
@@ -51,70 +57,69 @@ export const SinglePosts = ({
     );
   }, [database]);
 
-  useEffect(()=>{
+  useEffect(() => {
     onSnapshot(
-      query(collection(database , "posts" ,id , "reacts" )),
-      (onSnapshot)=>{
+      query(collection(database, "posts", id, "reacts")),
+      (onSnapshot) => {
         setTotalReacts(onSnapshot.docs)
       }
     )
-  },[database])
-  
-  useEffect(()=>{
-    setHasLike(
-      totalReacts.findIndex(react=>(react.id === userId) !== -1)
-    )
-  },[totalReacts])
+  }, [database])
 
-  useEffect(()=>{
-    const data = totalReacts.map((val,ind)=>console.log());
+  useEffect(() => {
+    setHasLike(
+      totalReacts.findIndex(react => (react.id === userId) !== -1)
+    )
+  }, [totalReacts])
+
+  useEffect(() => {
+    const data = totalReacts.map((val, ind) => console.log());
     setTotalLove(data?.length)
-  },[totalReacts , database])
-  useEffect(()=>{
-    if(hasLike===0){
+  }, [totalReacts, database])
+  useEffect(() => {
+    if (hasLike === 0) {
       setLike(true)
-    }else{
+    } else {
       setLike(false)
     }
-  },[hasLike])
+  }, [hasLike])
 
-  const giveLike = async() => {
+  const giveLike = async () => {
     try {
       setLike(true)
       const addLike = await setDoc(
-        doc(database , "posts" , id , "reacts" , userId ),
+        doc(database, "posts", id, "reacts", userId),
         {
           userId,
         }
-        )
-      } catch (error) {
-        console.log(error);
-        setLike(false)
-      }
+      )
+    } catch (error) {
+      console.log(error);
+      setLike(false)
+    }
   };
-  
-  const removeLike = async() =>{
+
+  const removeLike = async () => {
     try {
       setLike(false);
-      const deleteA = await deleteDoc(doc(database , "posts" , id , "reacts" , userId ));
-      console.log(deleteA);
+      const deleteA = await deleteDoc(doc(database, "posts", id, "reacts", userId));
     } catch (error) {
       console.log(error);
       setLike(true)
     }
   }
-  const handleLike = async() =>{
-    if(isLike){
+  const handleLike = async () => {
+    if (isLike) {
       removeLike()
     }
-    else{
+    else {
       giveLike()
     }
   }
 
 
   const addComment = async (e) => {
-    const {name,email,image} = session.user;
+    const { name, email, image } = session.user;
     e.preventDefault();
     try {
       if (comment !== "") {
@@ -122,8 +127,8 @@ export const SinglePosts = ({
           collection(database, "posts", id, "comments"),
           {
             comment,
-            profileImg:image,
-            username:name,
+            profileImg: image,
+            username: name,
             PostImage,
             id,
           }
@@ -136,6 +141,13 @@ export const SinglePosts = ({
       console.log(error);
     }
   };
+  const handleDelete = async () => {
+    try {
+      const deletepost = await deleteDoc(doc(database, "posts", id));
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <>
       <div className="singlepost mb-5 commonBox w-[614px] md:w-auto bg-white m-auto pt-5 pb-3 px-3">
@@ -155,9 +167,49 @@ export const SinglePosts = ({
               <h4 className=" uppercase text-gray-600 text-xs">Explore</h4>
             </div>
           </div>
-          <div className="right">
-            <BsThreeDots className=" cursor-pointer" />
-          </div>
+          {
+            isMe ?
+              <div className="right">
+                <Menu as="div" className="relative inline-block text-left">
+                  <div>
+                    <Menu.Button className="">
+                      <BsThreeDots className=" cursor-pointer" />
+                    </Menu.Button>
+                  </div>
+
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="origin-top-right absolute right-0 mt-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <h2
+                              onClick={() => handleDelete()}
+                              className={classNames(
+                                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                'block px-4 py-2 text-sm'
+                              )}
+                            >
+                              Delete
+                            </h2>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+
+              </div>
+              :
+              ""
+          }
         </div>
         {/* here is image  */}
         <img
@@ -207,9 +259,9 @@ export const SinglePosts = ({
         })}
         {/* post timestamp  */}
         <h6 className=" text-xs text-gray-500 my-2">
-          <Moment fromNow className="uppercase">
+          {/* <Moment fromNow className="uppercase">
             {timestamp?.toDate()}
-          </Moment>
+          </Moment> */}
         </h6>
         {/* submit comments  */}
         <form

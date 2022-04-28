@@ -3,6 +3,7 @@ import Head from "next/head"
 import { Login } from "../../components/partials/Login"
 
 export default function SignIn({ providers }) {
+  console.log(providers);
   return (
     <>
       <Head>
@@ -10,12 +11,11 @@ export default function SignIn({ providers }) {
         <link rel='icon' href='/images/logo.jpg' />
       </Head>
       {Object.values(providers).map((provider) => (
-        <div key={provider.name}>
-          <Login
-            proName={provider.name}
-            proId={provider.id}
-          />
-        </div>
+        <Login
+          key={provider.name}
+          proName={provider.name}
+          proId={provider.id}
+        />
       ))}
     </>
   )

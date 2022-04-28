@@ -44,13 +44,12 @@ export const CreateNewPost = () => {
       setLoading(true);
       const { name, email, image } = session.user;
       const docRef = await addDoc(collection(db, "posts"), {
-        userId:Cookies.get("userid"),
+        userId: Cookies.get("userid"),
         caption: caption.current.value,
         username: name,
         profileImg: image,
         timestamp: serverTimestamp(),
       });
-      console.log("new doc added the id is : ", docRef.id);
       const imageRef = ref(storage, `posts/${docRef.id}`);
 
       await uploadString(imageRef, selectImage, "data_url").then(
@@ -65,39 +64,12 @@ export const CreateNewPost = () => {
       setLoading(false);
       dispatch(isCreatePost(false));
       setSelectImage(null);
-      router.reload()
+      router.reload();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const uploadPost = async () => {
-    try {
-      setLoading(true);
-      const { name, email, image } = session.user;
-      const sendDoc = await addDoc(collection, (db, "posts"), {
-        caption: caption.current.value,
-        username: name,
-        email: email,
-        profileImg: image,
-        timestamp: serverTimestamp(),
-      });
-      console.log("new doc added the id is : ", sendDoc.id);
-
-      const imageRef = ref(storage, `posts/${sendDoc.id}`);
-      console.log("this is imageRef ", imageRef);
-      await uploadString(imageRef, selectImage, "data_url").then(
-        async (snapshot) => {
-          const downloadUrl = await getDownloadURL(imageRef);
-        }
-      );
-      setLoading(false);
-      dispatch(isCreatePost(false));
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
   return (
     <>
       <Head>

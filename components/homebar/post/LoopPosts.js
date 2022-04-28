@@ -12,10 +12,12 @@ import { db } from "../../../firebase";
 import React, { useEffect, useState } from "react";
 import { SinglePosts } from "./SinglePosts";
 import { useSelector } from "react-redux";
+import { Loader } from "./Loader";
 
 export const LoopPosts = () => {
   const [posts, setPosts] = useState([]);
-  const [postLimit , setLimit ] = useState(2);
+  const [postLimit, setLimit] = useState(4);
+  const [s, t] = useState(4);
   useEffect(() => {
     onSnapshot(
       query(collection(db, "posts"), orderBy("timestamp", "desc"), limit(postLimit)),
@@ -23,14 +25,16 @@ export const LoopPosts = () => {
         setPosts(snapShot.docs);
       }
     );
-  }, [db,postLimit,posts]);
+  }, [db, postLimit]);
 
-  function increaseNumber(num) {
-    setLimit(num + 1)
-  }
   window.onscroll = function () {
-    if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
-      increaseNumber(postLimit)
+    // const detect = (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 1
+    // if (detect) {
+    //   t(s + 0.4)
+    // }
+    const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+    if ((scrollTop + clientHeight) >= scrollHeight) {
+      setLimit(postLimit + 2)
     }
   };
 
@@ -46,9 +50,11 @@ export const LoopPosts = () => {
             caption={post.data().caption}
             timestamp={post.data().timestamp}
             id={post.id}
+            postUserId={post.data().userId}
           />
         );
       })}
+      <Loader />
     </>
   );
 };
